@@ -8,7 +8,9 @@ approximatif ne doit jamais atteindre la base de données.
 from __future__ import annotations
 
 import json
+import random
 import re
+import time
 
 import requests
 from pydantic import ValidationError
@@ -20,6 +22,30 @@ from .rubric import AXES, RUBRIC_VERSION, build_messages
 
 class AnalysisError(RuntimeError):
     pass
+
+
+class PermanentError(AnalysisError):
+    """Refus définitif : clé invalide, modèle hors du palier souscrit, quota
+    épuisé. Réessayer est inutile et retarde le message d'erreur utile."""
+
+
+class TransientError(AnalysisError):
+    """Échec passager (débit limité, panne côté fournisseur).
+
+    À distinguer d'une réponse mal formée : renvoyer immédiatement la même
+    requête après un 429 ne fait qu'aggraver la limite, et lui accoler « ta
+    réponse n'était pas du JSON valide » n'a aucun sens puisque le modèle n'a
+    jamais répondu.
+    """
+
+    def __init__(self, message: str, retry_after: float | None = None) -> None:
+        super().__init__(message)
+        self.retry_after = retry_after
+
+
+MAX_ATTEMPTS = 4
+BACKOFF_BASE_S = 2.0
+BACKOFF_MAX_S = 30.0
 
 
 _JSON_BLOCK_RE = re.compile(r"\{.*\}", re.DOTALL)
@@ -91,8 +117,15 @@ class OpenAICompatibleAnalyst:
             },
             timeout=self.settings.timeout_s,
         )
+        if response.status_code == 429 or response.status_code >= 500:
+            retry_after = response.headers.get("Retry-After")
+            raise TransientError(
+                f"Fournisseur indisponible ({response.status_code}) : "
+                f"{response.text[:200]}",
+                retry_after=float(retry_after) if retry_after and retry_after.isdigit() else None,
+            )
         if response.status_code >= 400:
-            raise AnalysisError(
+            raise PermanentError(
                 f"Analyse refusée ({response.status_code}) : {response.text[:300]}"
             )
         try:
@@ -110,21 +143,44 @@ class OpenAICompatibleAnalyst:
         messages = build_messages(domain, topic, time_limit_s, metrics, transcript_text)
 
         last_error: Exception | None = None
-        for attempt in range(2):
+        for attempt in range(MAX_ATTEMPTS):
             try:
                 content = self._call(messages)
                 return _coerce(_extract_json(content), self.settings.llm_model)
+
+            except PermanentError:
+                raise  # inutile d'insister : l'erreur ne changera pas
+
+            except TransientError as exc:
+                last_error = exc
+                if attempt == MAX_ATTEMPTS - 1:
+                    break
+                # Attente exponentielle, avec un décalage aléatoire pour ne pas
+                # synchroniser plusieurs utilisateurs sur la même reprise.
+                delay = exc.retry_after or min(
+                    BACKOFF_BASE_S * (2 ** attempt), BACKOFF_MAX_S
+                )
+                time.sleep(delay + random.uniform(0, 0.5))
+
             except (AnalysisError, ValidationError, json.JSONDecodeError) as exc:
                 last_error = exc
-                # Deuxième tentative : on rappelle la contrainte de format.
-                messages = messages + [{
+                if attempt == MAX_ATTEMPTS - 1:
+                    break
+                # Réponse reçue mais inexploitable : on rappelle la contrainte
+                # de format, une seule fois, et on repart du prompt d'origine
+                # pour ne pas empiler les rappels.
+                messages = build_messages(
+                    domain, topic, time_limit_s, metrics, transcript_text
+                ) + [{
                     "role": "user",
                     "content": "Ta réponse n'était pas un JSON valide conforme au modèle "
                                "demandé. Renvoie uniquement l'objet JSON, sans aucun texte "
                                "autour.",
                 }]
 
-        raise AnalysisError(f"Analyse impossible après 2 tentatives : {last_error}")
+        raise AnalysisError(
+            f"Analyse impossible après {MAX_ATTEMPTS} tentatives : {last_error}"
+        )
 
 
 class MockAnalyst:
