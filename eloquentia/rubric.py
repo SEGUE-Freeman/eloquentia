@@ -16,7 +16,11 @@ import json
 
 from .models import SpeechMetrics
 
-RUBRIC_VERSION = "1.0"
+# 1.1 : interdit au modèle de fonder ses notes sur les mesures acoustiques.
+# En 1.0, il pénalisait les tics dans l'axe « langue » alors que le score
+# d'aisance les sanctionnait déjà, et proposait comme axe prioritaire ce que
+# les mesures disaient déjà. Le même défaut comptait deux fois.
+RUBRIC_VERSION = "1.1"
 
 # Poids du score global. L'aisance vient du code (metrics.fluency_score), les
 # cinq autres du LLM.
@@ -93,7 +97,9 @@ GRILLE DE NOTATION (version {RUBRIC_VERSION}) — applique-la à la lettre, pali
 {chr(10).join(f"- {name} ({a['label']}) : {a['question']} {a['anchors']}" for name, a in AXES.items())}
 
 RÈGLES IMPÉRATIVES
-1. Tu notes uniquement les cinq axes ci-dessus. Le débit, les pauses, les tics de langage et l'intonation ont DÉJÀ été mesurés par des outils acoustiques : ces chiffres te sont fournis comme des faits. Tu peux t'y référer, jamais les contredire ni les re-noter.
+1. Tu notes uniquement les cinq axes ci-dessus. Le débit, les pauses, les tics de langage (« euh », « du coup », « en fait »...) et l'intonation sont mesurés séparément par des outils acoustiques, et l'orateur reçoit déjà un retour automatique là-dessus. Ce n'est pas ton sujet.
+   - Aucune de tes cinq notes ne doit monter ou descendre à cause d'un tic, d'un silence, d'un débit ou d'une intonation. L'axe « langue » juge la syntaxe, la précision du vocabulaire et le registre — pas la fluidité.
+   - Ton axe prioritaire doit porter sur la pensée, la construction ou la langue. Répondre « réduis tes tics » ou « travaille ta fluidité » est interdit : c'est déjà dit, et ce n'est pas ton rôle. Tu es là pour ce qu'une machine ne sait pas mesurer.
 2. Le texte provient d'une transcription automatique. Ignore la ponctuation, l'orthographe et les mots manifestement mal transcrits : juge le discours, pas la transcription.
 3. Chaque justification cite un élément précis du discours (une formule, un exemple, un enchaînement). Pas de commentaire qui pourrait s'appliquer à n'importe quelle prestation.
 4. Si une référence culturelle ou un fait avancé est faux, signale-le explicitement dans la justification de « contenu » et baisse la note en conséquence.
@@ -115,35 +121,34 @@ OUTPUT_TEMPLATE = {
 
 
 def format_measured_facts(metrics: SpeechMetrics, time_limit_s: int) -> str:
-    """Les mesures transmises au LLM comme faits établis, pas comme opinions."""
+    """Contexte factuel transmis au LLM — strictement limité à ce qui n'est PAS
+    déjà noté ailleurs.
+
+    Le débit, les pauses, les tics, la richesse lexicale et l'intonation entrent
+    tous dans le score d'aisance calculé par le code. Les transmettre au modèle
+    revenait à les faire compter une seconde fois : en version 1.0, il baissait
+    la note de « langue » à cause des « du coup » et proposait « réduis tes
+    tics » comme axe prioritaire, alors que les mesures le disaient déjà.
+
+    Le durcir par une consigne n'a pas suffi — un modèle de petite taille ne
+    tient pas une interdiction portant sur une donnée qu'il a sous les yeux. La
+    seule correction fiable est de ne pas la lui donner. Une contrainte qu'on
+    peut rendre structurelle vaut mieux qu'une contrainte qu'on demande.
+
+    Ne reste donc ici que le cadrage temporel — utile pour juger si la
+    conclusion a été bâclée ou le temps sous-exploité — et les mots
+    sur-utilisés, qui relèvent de la langue et n'entrent dans aucun score.
+    """
 
     lines = [
         f"- Durée du discours : {metrics.duration_s:.0f} s sur {time_limit_s} s imparties",
-        f"- Nombre de mots : {metrics.word_count}",
-        f"- Débit en articulation : {metrics.articulation_wpm:.0f} mots/min "
-        f"(zone confortable : 140-175)",
-        f"- Silences longs (> 1,5 s) : {metrics.pauses.count_long} "
-        f"(le plus long : {metrics.pauses.longest_s:.1f} s à {metrics.pauses.longest_at:.0f} s)",
-        f"- Part de silence : {metrics.pauses.silence_ratio:.0%} du temps total",
-        f"- Tics de langage : {metrics.filler_count} au total "
-        f"({metrics.filler_per_min:.1f} par minute)",
-        f"- Richesse lexicale (MATTR) : {metrics.mattr:.2f}",
-        f"- Score d'aisance calculé : {metrics.fluency_score}/100",
+        f"- Nombre de mots prononcés : {metrics.word_count}",
+        f"- Nombre de phrases : {metrics.sentence_count}",
     ]
 
-    if metrics.fillers:
-        detail = ", ".join(f"« {f.pattern} » x{f.count}" for f in metrics.fillers[:6])
-        lines.append(f"- Détail des tics : {detail}")
     if metrics.overused_words:
         detail = ", ".join(f"« {w} » x{c}" for w, c in metrics.overused_words)
-        lines.append(f"- Mots sur-utilisés : {detail}")
-    if metrics.prosody is not None:
-        lines.append(
-            f"- Intonation : variation de {metrics.prosody.pitch_variation_st:.1f} demi-tons "
-            f"({'voix plate' if metrics.prosody.monotony_flag else 'intonation vivante'})"
-        )
-    else:
-        lines.append("- Intonation : non mesurée sur cet enregistrement")
+        lines.append(f"- Mots revenant le plus souvent : {detail}")
 
     return "\n".join(lines)
 

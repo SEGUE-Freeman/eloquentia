@@ -17,7 +17,7 @@ from pathlib import Path
 
 from .analysis import build_analyst
 from .config import Settings
-from .metrics import analyse_speech
+from .metrics import analyse_speech, strip_fillers
 from .models import Report, Transcript
 from .prosody import analyse_prosody
 from .rubric import compute_global_score
@@ -55,13 +55,17 @@ def analyse_session(
         prosody=prosody,
     )
 
+    # Le LLM juge une transcription débarrassée des tics : ceux-ci sont déjà
+    # comptés dans le score d'aisance, et tant qu'ils restent visibles le modèle
+    # les recommente et baisse ses notes à cause d'eux. La transcription brute
+    # reste dans le rapport, c'est elle que l'orateur relit.
     analyst = build_analyst(settings)
     analysis = analyst.analyse(
         domain=domain,
         topic=topic,
         time_limit_s=time_limit_s,
         metrics=metrics,
-        transcript_text=transcript.text,
+        transcript_text=strip_fillers(transcript.text),
     )
 
     axis_scores = {name: axis.score for name, axis in analysis.axes.items()}

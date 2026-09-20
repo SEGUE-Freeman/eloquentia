@@ -15,6 +15,7 @@ from eloquentia.metrics import (
     detect_fillers,
     mattr,
     normalize,
+    strip_fillers,
     tokenize,
 )
 from eloquentia.models import ProsodyStats, Word
@@ -72,6 +73,51 @@ def test_timestamps_des_exemples_remontes():
 def test_mot_ordinaire_non_compte_comme_tic():
     _, total = detect_fillers([], "la démocratie exige des citoyens informés")
     assert total == 0
+
+
+# --------------------------------------------------------------------------
+# Transcription nettoyée pour le LLM
+# --------------------------------------------------------------------------
+
+def test_retire_les_hesitations():
+    assert strip_fillers("Euh, alors, je commence.") == "Alors, je commence."
+
+
+def test_retire_les_expressions_multi_mots():
+    assert strip_fillers("Du coup, je vais vous dire.") == "Je vais vous dire."
+
+
+def test_recolle_la_ponctuation_orpheline():
+    """Retirer « en fait, » ne doit pas laisser une virgule flottante."""
+    assert strip_fillers("En fait, quand on regarde, euh, c'est clair.") == \
+        "Quand on regarde, c'est clair."
+
+
+def test_majuscule_restauree_en_tete_de_phrase():
+    assert strip_fillers("Euh, la machine décide.").startswith("La machine")
+
+
+def test_texte_sans_tic_inchange():
+    propre = "La démocratie exige des citoyens informés."
+    assert strip_fillers(propre) == propre
+
+
+def test_le_nettoyage_supprime_bien_les_tics_comptes():
+    """Cohérence entre les deux usages du même détecteur : ce qui est compté
+    dans le score doit disparaître du texte envoyé au modèle."""
+    brut = "Euh, du coup, en fait, la question est simple."
+    _, avant = detect_fillers([], brut)
+    _, apres = detect_fillers([], strip_fillers(brut))
+    assert avant == 3
+    assert apres == 0
+
+
+def test_contenu_preserve():
+    """Le nettoyage ne doit retirer que les tics, pas amputer le propos."""
+    brut = "Du coup, les luddites brisaient les métiers à tisser, en fait."
+    net = strip_fillers(brut)
+    for mot in ("luddites", "brisaient", "métiers", "tisser"):
+        assert mot in net
 
 
 # --------------------------------------------------------------------------

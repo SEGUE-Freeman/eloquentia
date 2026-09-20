@@ -73,6 +73,84 @@ STOPWORDS = {
 }
 
 
+def _filler_spans(text: str) -> list[tuple[int, int]]:
+    """Positions des tics dans le texte brut, expressions multi-mots comprises."""
+    matches = list(_TOKEN_RE.finditer(text))
+    tokens = [normalize(m.group(0)) for m in matches]
+
+    spans: list[tuple[int, int]] = []
+    consumed: set[int] = set()
+
+    for expr in SOFT_FILLERS:
+        parts = expr.split()
+        n = len(parts)
+        if n < 2:
+            continue
+        for i in range(len(tokens) - n + 1):
+            if any(j in consumed for j in range(i, i + n)):
+                continue
+            if tokens[i:i + n] == parts:
+                spans.append((matches[i].start(), matches[i + n - 1].end()))
+                consumed.update(range(i, i + n))
+
+    single_soft = {e for e in SOFT_FILLERS if " " not in e}
+    for i, tok in enumerate(tokens):
+        if i in consumed:
+            continue
+        if tok in HARD_FILLERS or tok in single_soft:
+            spans.append((matches[i].start(), matches[i].end()))
+
+    return sorted(spans)
+
+
+# Nettoyage de la ponctuation orpheline laissée par une suppression.
+_CLEAN_RULES = (
+    (re.compile(r"\s+([,;:.!?])"), r"\1"),      # espace avant ponctuation
+    (re.compile(r"([,;:])\s*(?=[,;:.!?])"), ""),  # ponctuations accolées
+    (re.compile(r"([.!?])\s*,"), r"\1"),          # « . , » -> « . »
+    (re.compile(r"^\s*[,;:]\s*", re.MULTILINE), ""),  # phrase ouvrant sur une virgule
+    (re.compile(r"[ \t]{2,}"), " "),
+    (re.compile(r"\s+\n"), "\n"),
+)
+
+
+def strip_fillers(text: str) -> str:
+    """Retire les tics du texte, pour la version transmise au LLM.
+
+    Les tics sont déjà comptés et sanctionnés par le score d'aisance. Tant
+    qu'ils restent visibles dans la transcription, le modèle les commente et
+    baisse ses notes à cause d'eux — on l'a vérifié : ni une consigne explicite
+    ni le retrait des mesures du prompt n'y suffisent. Le texte nettoyé supprime
+    la tentation à la source, et recentre le jugement sur ce qui a été dit
+    plutôt que sur la manière dont ça a hésité.
+
+    La transcription brute reste évidemment intacte : c'est elle qui alimente
+    les mesures et que l'orateur relit.
+    """
+    spans = _filler_spans(text)
+    if not spans:
+        return text
+
+    out: list[str] = []
+    prev = 0
+    for start, end in spans:
+        out.append(text[prev:start])
+        prev = end
+    out.append(text[prev:])
+
+    cleaned = "".join(out)
+    for pattern, replacement in _CLEAN_RULES:
+        cleaned = pattern.sub(replacement, cleaned)
+
+    # Une phrase peut commencer en minuscule après suppression d'un tic initial.
+    cleaned = re.sub(
+        r"(^|[.!?]\s+)([a-zà-öø-ÿ])",
+        lambda m: m.group(1) + m.group(2).upper(),
+        cleaned,
+    )
+    return cleaned.strip()
+
+
 def detect_fillers(words: list[Word], text: str) -> tuple[list[FillerHit], int]:
     """Détecte les tics sur la séquence de mots horodatés quand elle existe,
     sinon sur le texte brut (sans timestamps d'exemple)."""
