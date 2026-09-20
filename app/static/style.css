@@ -1,0 +1,477 @@
+/* Eloquentia — feuille de style unique.
+   Parti pris : fond très sombre, couleurs saturées réservées aux secteurs de
+   la roue et aux états du chrono. Le contraste fait l'adrénaline ; s'il y a
+   de la couleur partout, il n'y en a nulle part. */
+
+:root {
+  --fond: #0A0C18;
+  --fond-2: #111528;
+  --carte: #161B33;
+  --bord: #252B4A;
+
+  --texte: #EDEFFA;
+  --doux: #949BC4;
+  --faible: #5F669148;
+
+  --accent: #FF3D68;
+  --accent-2: #7C5CFF;
+  --cyan: #22D3EE;
+  --ambre: #FBBF24;
+  --rouge: #F43F5E;
+  --vert: #34D399;
+
+  --serif: "Fraunces", Georgia, serif;
+  --sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --rayon: 16px;
+  --gouttiere: 16px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  background: var(--fond);
+  color: var(--texte);
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Halo de fond : donne de la profondeur sans image. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(60rem 40rem at 70% -10%, #7C5CFF22, transparent 60%),
+    radial-gradient(50rem 35rem at 10% 110%, #FF3D6818, transparent 60%);
+  pointer-events: none;
+}
+
+/* ─────────────────────────── Barre ─────────────────────────── */
+
+.barre {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px var(--gouttiere);
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.marque {
+  font-family: var(--serif);
+  font-size: 1.35rem;
+  letter-spacing: -0.02em;
+  background: linear-gradient(100deg, var(--accent), var(--accent-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.lien {
+  background: none;
+  border: 0;
+  color: var(--doux);
+  font: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 10px;
+}
+.lien:hover { color: var(--texte); background: #ffffff0d; }
+
+/* ─────────────────────────── Écrans ─────────────────────────── */
+
+.ecran {
+  display: none;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 8px var(--gouttiere) 80px;
+  text-align: center;
+}
+.ecran.actif { display: block; animation: entree 0.45s cubic-bezier(.2,.7,.3,1); }
+
+@keyframes entree {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.titre {
+  font-family: var(--serif);
+  font-size: clamp(2rem, 7vw, 3.1rem);
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  margin: 10px 0 28px;
+}
+.titre em {
+  font-style: italic;
+  background: linear-gradient(100deg, var(--accent), var(--accent-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.titre-moyen {
+  font-family: var(--serif);
+  font-size: clamp(1.5rem, 5vw, 2rem);
+  margin: 16px 0 12px;
+}
+
+/* Pas de capitales sur le sujet lui-même : « cœur » devient « CŒUR », et la
+   ligature majuscule manque dans beaucoup de polices — elle s'affiche alors en
+   carré. Le français en a besoin (cœur, sœur, œuvre), donc seules les
+   étiquettes courtes passent en capitales. */
+.etiquette {
+  font-size: 0.8rem;
+  color: var(--doux);
+  margin: 4px 0 10px;
+  line-height: 1.5;
+}
+.etiquette.capitales,
+.etq-dom {
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.72rem;
+}
+.etq-dom { color: #6B7299; margin-right: 0.7em; }
+
+.annonce { color: var(--doux); font-size: 1rem; min-height: 1.5em; margin: 14px 0; }
+.note-discrete { color: #6B7299; font-size: 0.85rem; }
+.erreur { color: var(--rouge); font-size: 0.9rem; min-height: 1.2em; }
+
+/* ─────────────────────────── La roue ─────────────────────────── */
+
+.roue-zone {
+  position: relative;
+  width: min(420px, 86vw);
+  margin: 0 auto;
+  aspect-ratio: 1;
+}
+
+#roue { width: 100%; height: 100%; display: block; }
+
+/* La rotation porte sur le groupe des secteurs, pas sur le moyeu :
+   le bouton central doit rester lisible pendant que ça tourne. */
+#secteurs {
+  transform-origin: 200px 200px;
+  transition: transform 5s cubic-bezier(0.12, 0.82, 0.13, 1);
+}
+
+.secteur { stroke: #0A0C18; stroke-width: 1.5; cursor: pointer; }
+.secteur-texte {
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 600;
+  fill: #0A0C18;
+  pointer-events: none;
+}
+
+.moyeu {
+  fill: var(--fond-2);
+  stroke: var(--bord);
+  stroke-width: 2;
+  filter: drop-shadow(0 6px 20px #000A);
+}
+.moyeu-texte {
+  font-family: var(--sans);
+  font-size: 15px;
+  font-weight: 600;
+  fill: var(--texte);
+  text-anchor: middle;
+  letter-spacing: 0.06em;
+  pointer-events: none;
+}
+.moyeu-sous {
+  font-size: 9px;
+  fill: var(--doux);
+  text-anchor: middle;
+  letter-spacing: 0.1em;
+  pointer-events: none;
+}
+
+.pointeur {
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0; height: 0;
+  border-left: 13px solid transparent;
+  border-right: 13px solid transparent;
+  border-top: 26px solid var(--texte);
+  z-index: 3;
+  filter: drop-shadow(0 3px 8px #000C);
+}
+
+.zone-clic {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 25%; height: 25%;
+  border-radius: 50%;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  z-index: 2;
+}
+.zone-clic:hover ~ #roue .moyeu { stroke: var(--accent); }
+.zone-clic:disabled { cursor: wait; }
+
+/* ─────────────────────────── Réglages ─────────────────────────── */
+
+.reglages {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 26px;
+}
+.reglages label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--doux);
+  font-size: 0.85rem;
+}
+select {
+  background: var(--carte);
+  color: var(--texte);
+  border: 1px solid var(--bord);
+  border-radius: 10px;
+  padding: 8px 10px;
+  font: inherit;
+  font-size: 0.85rem;
+}
+
+/* ─────────────────────────── Chrono ─────────────────────────── */
+
+.sujet {
+  font-family: var(--serif);
+  font-size: clamp(1.4rem, 5vw, 2.15rem);
+  line-height: 1.22;
+  margin: 0 auto 30px;
+  max-width: 18ch;
+}
+
+.chrono-zone { position: relative; width: min(280px, 70vw); margin: 0 auto; aspect-ratio: 1; }
+.chrono { width: 100%; height: 100%; transform: rotate(-90deg); }
+.chrono-fond { fill: none; stroke: var(--bord); stroke-width: 10; }
+.chrono-arc {
+  fill: none;
+  stroke: var(--cyan);
+  stroke-width: 10;
+  stroke-linecap: round;
+  stroke-dasharray: 603;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 1s linear, stroke 0.6s ease;
+}
+.chrono-arc.tiede { stroke: var(--ambre); }
+.chrono-arc.chaud { stroke: var(--rouge); }
+
+.chrono-centre {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+#chrono-texte {
+  font-family: var(--serif);
+  font-size: clamp(2.4rem, 9vw, 3.4rem);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+.chrono-etat {
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.65rem;
+  color: var(--doux);
+}
+.chrono-etat.enregistre { color: var(--accent); }
+.chrono-etat.enregistre::before {
+  content: "";
+  display: inline-block;
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  margin-right: 7px;
+  animation: pulse 1.3s infinite;
+}
+@keyframes pulse { 50% { opacity: 0.25; } }
+
+.niveau-micro {
+  width: min(280px, 70vw);
+  height: 4px;
+  margin: 20px auto 0;
+  background: var(--bord);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.niveau-micro span {
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--cyan), var(--accent-2));
+  transition: width 0.08s linear;
+}
+
+/* ─────────────────────────── Boutons ─────────────────────────── */
+
+.actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 30px; }
+
+.bouton {
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 14px 26px;
+  border-radius: 99px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+.bouton:hover { transform: translateY(-2px); filter: brightness(1.1); }
+.bouton:active { transform: none; }
+
+.primaire { background: linear-gradient(100deg, var(--accent), var(--accent-2)); color: #fff; }
+.danger { background: var(--rouge); color: #fff; }
+.discret { background: transparent; border-color: var(--bord); color: var(--doux); }
+
+/* ─────────────────────────── Attente ─────────────────────────── */
+
+.attente-anneau {
+  width: 70px; height: 70px;
+  margin: 60px auto 20px;
+  border-radius: 50%;
+  border: 3px solid var(--bord);
+  border-top-color: var(--accent);
+  animation: tourne 0.9s linear infinite;
+}
+@keyframes tourne { to { transform: rotate(360deg); } }
+
+/* ─────────────────────────── Résultat ─────────────────────────── */
+
+.score-global { position: relative; width: min(220px, 56vw); margin: 10px auto 26px; aspect-ratio: 1; }
+.anneau { width: 100%; height: 100%; transform: rotate(-90deg); }
+.anneau-fond { fill: none; stroke: var(--bord); stroke-width: 12; }
+.anneau-arc {
+  fill: none;
+  stroke: url(#degrade);
+  stroke: var(--accent);
+  stroke-width: 12;
+  stroke-linecap: round;
+  stroke-dasharray: 540;
+  stroke-dashoffset: 540;
+  transition: stroke-dashoffset 1.4s cubic-bezier(.2,.7,.3,1);
+}
+.score-centre {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+}
+#res-global { font-family: var(--serif); font-size: 3.2rem; line-height: 1; }
+.score-centre small { color: var(--doux); font-size: 0.75rem; letter-spacing: 0.1em; }
+
+.bloc {
+  background: var(--carte);
+  border: 1px solid var(--bord);
+  border-radius: var(--rayon);
+  padding: 20px;
+  margin: 16px 0;
+  text-align: left;
+}
+.bloc h3 {
+  font-family: var(--serif);
+  font-size: 1.05rem;
+  margin: 0 0 16px;
+  color: var(--texte);
+}
+
+.axes { display: flex; flex-direction: column; gap: 13px; }
+.axe-ligne { display: grid; grid-template-columns: 8.5rem 1fr 2.2rem; gap: 10px; align-items: center; }
+.axe-nom { font-size: 0.85rem; color: var(--doux); }
+.axe-nom .mesure { display: block; font-size: 0.65rem; letter-spacing: 0.1em; color: #5B6291; }
+.axe-piste { height: 8px; background: var(--fond-2); border-radius: 99px; overflow: hidden; }
+.axe-barre {
+  height: 100%;
+  width: 0;
+  border-radius: 99px;
+  background: linear-gradient(90deg, var(--accent-2), var(--accent));
+  transition: width 1s cubic-bezier(.2,.7,.3,1);
+}
+.axe-barre.code { background: linear-gradient(90deg, var(--cyan), var(--vert)); }
+.axe-valeur { font-variant-numeric: tabular-nums; font-weight: 600; text-align: right; font-size: 0.9rem; }
+
+.axe-just { grid-column: 1 / -1; font-size: 0.85rem; color: var(--doux); line-height: 1.5; margin: 2px 0 6px; }
+
+.mesures { display: grid; grid-template-columns: repeat(auto-fit, minmax(122px, 1fr)); gap: 12px; }
+.mesure-tuile { background: var(--fond-2); border-radius: 12px; padding: 12px; }
+.mesure-tuile b { display: block; font-family: var(--serif); font-size: 1.4rem; font-weight: 600; }
+.mesure-tuile span { font-size: 0.72rem; color: var(--doux); letter-spacing: 0.04em; }
+.mesure-tuile.alerte b { color: var(--ambre); }
+
+.notes { margin: 16px 0 0; padding-left: 18px; color: var(--doux); font-size: 0.88rem; line-height: 1.65; }
+
+.retour { display: flex; flex-direction: column; gap: 14px; }
+.retour-carte { border-left: 3px solid var(--bord); padding-left: 14px; }
+.retour-carte h4 {
+  margin: 0 0 5px;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--doux);
+  font-weight: 600;
+}
+.retour-carte p { margin: 0; font-size: 0.95rem; line-height: 1.55; }
+.retour-carte.fort { border-color: var(--vert); }
+.retour-carte.corriger { border-color: var(--ambre); }
+.retour-carte.exercice { border-color: var(--accent-2); }
+.retour-carte.mieux { border-color: var(--accent); }
+.retour-carte.mieux p { font-family: var(--serif); font-style: italic; }
+
+.replier {
+  background: none; border: 0; color: var(--doux);
+  font: inherit; font-size: 0.85rem; cursor: pointer; padding: 0;
+  text-decoration: underline; text-underline-offset: 4px;
+}
+.transcription { color: var(--doux); font-size: 0.9rem; line-height: 1.75; margin-top: 14px; }
+
+audio { width: 100%; margin-top: 16px; }
+
+/* ─────────────────────────── Progression ─────────────────────────── */
+
+.courbe { background: var(--carte); border: 1px solid var(--bord); border-radius: var(--rayon); padding: 18px; margin: 16px 0; }
+.courbe svg { width: 100%; height: auto; display: block; }
+.courbe-ligne { fill: none; stroke: var(--accent); stroke-width: 2.5; stroke-linejoin: round; }
+.courbe-point { fill: var(--accent); }
+.courbe-grille { stroke: var(--bord); stroke-width: 1; }
+.courbe-legende { fill: #5B6291; font-size: 9px; font-family: var(--sans); }
+
+.progres-table { background: var(--carte); border: 1px solid var(--bord); border-radius: var(--rayon); padding: 18px; text-align: left; }
+.progres-ligne { display: grid; grid-template-columns: 1fr 3.5rem 4rem; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--bord); font-size: 0.9rem; }
+.progres-ligne:last-child { border-bottom: 0; }
+.progres-ligne .nom { color: var(--doux); }
+.progres-ligne .val { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+.progres-ligne .delta { text-align: right; font-variant-numeric: tabular-nums; font-size: 0.85rem; }
+.delta.hausse { color: var(--vert); }
+.delta.baisse { color: var(--rouge); }
+.delta.stable { color: #5B6291; }
+
+/* ─────────────────────────── Accessibilité ─────────────────────────── */
+
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+
+@media (prefers-reduced-motion: reduce) {
+  #secteurs { transition-duration: 0.9s; }
+  .ecran.actif { animation: none; }
+  .attente-anneau { animation-duration: 2s; }
+  .chrono-etat.enregistre::before { animation: none; }
+  * { scroll-behavior: auto; }
+}
+
+@media (max-width: 480px) {
+  .axe-ligne { grid-template-columns: 6.5rem 1fr 2rem; }
+  .bloc { padding: 16px; }
+}

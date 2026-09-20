@@ -35,11 +35,30 @@ de re-noter**.
 
 ---
 
-## Installation
+## Lancer l'application
 
 ```bash
 pip install -r requirements.txt
 ```
+
+```bash
+python -m uvicorn app.main:app --port 8000
+```
+
+Puis ouvrir <http://127.0.0.1:8000>. La roue tire un domaine, le sujet se
+révèle, le chronomètre se lance, l'enregistrement part à l'analyse et le
+rapport s'affiche. Rien à installer côté navigateur.
+
+Deux garde-fous invisibles, qui viennent de bugs réellement rencontrés :
+
+- **Le tirage est fait par le serveur**, jamais par le navigateur : c'est la
+  seule façon de tenir compte de l'historique pour éviter les répétitions.
+- **Le client ne renvoie que la référence du sujet**, jamais son texte. Le
+  serveur le résout depuis la banque. Un sujet ne peut donc plus diverger du
+  discours enregistré — c'est ce qui avait produit une note de pertinence de
+  5/100 sur un discours qui traitait parfaitement une autre question.
+
+## Installation du moteur seul
 
 `ffmpeg` est optionnel : il permet d'analyser l'intonation sur les formats
 non-WAV (notamment le webm produit par les navigateurs). Sans lui, tout le

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Eloquentia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<header class="barre">
+  <span class="marque">Eloquentia</span>
+  <nav>
+    <button class="lien" data-aller="roue">S'entraîner</button>
+    <button class="lien" data-aller="progres">Progression</button>
+  </nav>
+</header>
+
+<!-- ───────────────────────── Écran 1 : la roue ───────────────────────── -->
+<main id="ecran-roue" class="ecran actif">
+  <h1 class="titre">Un sujet.<br>Deux minutes.<br><em>Rien pour se préparer.</em></h1>
+
+  <div class="roue-zone">
+    <div class="pointeur" aria-hidden="true"></div>
+    <svg id="roue" viewBox="0 0 400 400" role="img" aria-label="Roue des domaines">
+      <g id="secteurs"></g>
+      <circle cx="200" cy="200" r="46" class="moyeu"/>
+      <text x="200" y="196" class="moyeu-texte">TOURNER</text>
+      <text x="200" y="214" class="moyeu-sous">11 domaines</text>
+    </svg>
+    <button id="btn-tourner" class="zone-clic" aria-label="Lancer la roue"></button>
+  </div>
+
+  <p id="annonce-domaine" class="annonce" aria-live="polite"></p>
+
+  <div class="reglages">
+    <label>Durée
+      <select id="duree">
+        <option value="60">1 minute</option>
+        <option value="120" selected>2 minutes</option>
+        <option value="180">3 minutes</option>
+      </select>
+    </label>
+    <label>Niveau
+      <select id="niveau">
+        <option value="">Tous les domaines</option>
+        <option value="echauffement">Échauffement</option>
+        <option value="standard">Standard</option>
+        <option value="exigeant">Exigeant</option>
+      </select>
+    </label>
+  </div>
+</main>
+
+<!-- ─────────────────────── Écran 2 : la prise de parole ─────────────────────── -->
+<main id="ecran-parole" class="ecran">
+  <p id="parole-domaine" class="etiquette capitales"></p>
+  <h2 id="parole-sujet" class="sujet"></h2>
+
+  <div class="chrono-zone">
+    <svg viewBox="0 0 220 220" class="chrono">
+      <circle cx="110" cy="110" r="96" class="chrono-fond"/>
+      <circle cx="110" cy="110" r="96" id="chrono-arc" class="chrono-arc"/>
+    </svg>
+    <div class="chrono-centre">
+      <span id="chrono-texte">2:00</span>
+      <span id="chrono-etat" class="chrono-etat">prêt</span>
+    </div>
+  </div>
+
+  <div id="niveau-micro" class="niveau-micro" aria-hidden="true"><span></span></div>
+
+  <div class="actions">
+    <button id="btn-demarrer" class="bouton primaire">Commencer à parler</button>
+    <button id="btn-arreter" class="bouton danger" hidden>Terminer</button>
+    <button id="btn-abandon" class="bouton discret">Abandonner</button>
+  </div>
+  <p id="parole-erreur" class="erreur" role="alert"></p>
+</main>
+
+<!-- ───────────────────────── Écran 3 : l'analyse ───────────────────────── -->
+<main id="ecran-attente" class="ecran">
+  <div class="attente-anneau" aria-hidden="true"></div>
+  <h2 class="titre-moyen">Analyse en cours</h2>
+  <p id="attente-etape" class="annonce" aria-live="polite">Transcription de l'enregistrement…</p>
+  <p class="note-discrete">Une quinzaine de secondes. Ne ferme pas cette page.</p>
+</main>
+
+<!-- ───────────────────────── Écran 4 : le résultat ───────────────────────── -->
+<main id="ecran-resultat" class="ecran">
+  <p id="res-sujet" class="etiquette"></p>
+
+  <div class="score-global">
+    <svg viewBox="0 0 200 200" class="anneau">
+      <circle cx="100" cy="100" r="86" class="anneau-fond"/>
+      <circle cx="100" cy="100" r="86" id="anneau-arc" class="anneau-arc"/>
+    </svg>
+    <div class="score-centre">
+      <span id="res-global">—</span>
+      <small>sur 100</small>
+    </div>
+  </div>
+
+  <section class="bloc">
+    <h3>Les six axes</h3>
+    <div id="res-axes" class="axes"></div>
+  </section>
+
+  <section class="bloc">
+    <h3>Ce qui a été mesuré</h3>
+    <div id="res-mesures" class="mesures"></div>
+    <ul id="res-notes" class="notes"></ul>
+    <audio id="res-audio" controls preload="none" hidden></audio>
+  </section>
+
+  <section class="bloc">
+    <h3>Le retour</h3>
+    <div id="res-retour" class="retour"></div>
+  </section>
+
+  <section class="bloc repliable">
+    <button class="replier" data-cible="res-transcription">Voir la transcription</button>
+    <p id="res-transcription" class="transcription" hidden></p>
+  </section>
+
+  <div class="actions">
+    <button class="bouton primaire" data-aller="roue">Un autre sujet</button>
+    <button class="bouton discret" data-aller="progres">Voir ma progression</button>
+  </div>
+</main>
+
+<!-- ───────────────────────── Écran 5 : la progression ───────────────────────── -->
+<main id="ecran-progres" class="ecran">
+  <h2 class="titre-moyen">Ta progression</h2>
+  <p id="progres-resume" class="annonce"></p>
+  <div id="progres-courbe" class="courbe"></div>
+  <div id="progres-table" class="progres-table"></div>
+  <div class="actions">
+    <button class="bouton primaire" data-aller="roue">S'entraîner</button>
+  </div>
+</main>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

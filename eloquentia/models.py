@@ -159,6 +159,10 @@ class Report(BaseModel):
 
     global_score: int = 0
 
+    # Nom du fichier audio conserve, pour la reecoute. Vide en ligne de
+    # commande, renseigne par le serveur web.
+    audio_path: str = ""
+
     def scores_flat(self) -> dict[str, int]:
         """Vue plate des scores, pour les courbes de progression."""
         out = {"global": self.global_score, "aisance": self.metrics.fluency_score}

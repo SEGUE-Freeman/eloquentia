@@ -27,6 +27,9 @@ EXIGEANT = "exigeant"
 class Domain:
     key: str
     label: str
+    # Libelle court affiche sur la roue : au-dela d'une douzaine de
+    # caracteres, le texte deborde du secteur.
+    short: str
     level: str
     color: str       # couleur du secteur sur la roue
     topics: tuple[str, ...]
@@ -34,7 +37,7 @@ class Domain:
 
 DOMAINS: tuple[Domain, ...] = (
     Domain(
-        key="societe", label="Société", level=STANDARD, color="#E4572E",
+        key="societe", label="Société", short="Société", level=STANDARD, color="#E4572E",
         topics=(
             "Faut-il avoir le droit de ne pas être joignable ?",
             "La politesse est-elle une hypocrisie utile ?",
@@ -49,7 +52,7 @@ DOMAINS: tuple[Domain, ...] = (
         ),
     ),
     Domain(
-        key="technologie", label="Technologie", level=STANDARD, color="#4A90D9",
+        key="technologie", label="Technologie", short="Technologie", level=STANDARD, color="#4A90D9",
         topics=(
             "Faut-il avoir peur de l'intelligence artificielle ?",
             "Un algorithme peut-il être juste ?",
@@ -64,7 +67,7 @@ DOMAINS: tuple[Domain, ...] = (
         ),
     ),
     Domain(
-        key="arts", label="Arts & Culture", level=STANDARD, color="#B25FAC",
+        key="arts", label="Arts & Culture", short="Arts", level=STANDARD, color="#B25FAC",
         topics=(
             "Faut-il finir un livre qu'on n'aime pas ?",
             "L'art doit-il être utile ?",
@@ -79,7 +82,7 @@ DOMAINS: tuple[Domain, ...] = (
         ),
     ),
     Domain(
-        key="histoire", label="Histoire", level=EXIGEANT, color="#C99B38",
+        key="histoire", label="Histoire", short="Histoire", level=EXIGEANT, color="#C99B38",
         topics=(
             "L'histoire se répète-t-elle ?",
             "Faut-il déboulonner les statues ?",
@@ -94,7 +97,7 @@ DOMAINS: tuple[Domain, ...] = (
         ),
     ),
     Domain(
-        key="economie", label="Économie & Travail", level=EXIGEANT, color="#2E9E8F",
+        key="economie", label="Économie & Travail", short="Économie", level=EXIGEANT, color="#2E9E8F",
         topics=(
             "Le travail doit-il donner un sens à la vie ?",
             "Faut-il plafonner les très hauts revenus ?",
@@ -109,7 +112,7 @@ DOMAINS: tuple[Domain, ...] = (
         ),
     ),
     Domain(
-        key="philosophie", label="Philosophie & Éthique", level=EXIGEANT, color="#7B68C9",
+        key="philosophie", label="Philosophie & Éthique", short="Philosophie", level=EXIGEANT, color="#7B68C9",
         topics=(
             "Peut-on être heureux sans être libre ?",
             "Faut-il toujours dire la vérité ?",
@@ -124,7 +127,7 @@ DOMAINS: tuple[Domain, ...] = (
         ),
     ),
     Domain(
-        key="environnement", label="Environnement", level=STANDARD, color="#5FA85F",
+        key="environnement", label="Environnement", short="Écologie", level=STANDARD, color="#5FA85F",
         topics=(
             "Faut-il culpabiliser les individus pour sauver la planète ?",
             "L'écologie est-elle un luxe de riches ?",
@@ -139,7 +142,7 @@ DOMAINS: tuple[Domain, ...] = (
         ),
     ),
     Domain(
-        key="education", label="Éducation", level=STANDARD, color="#D9705B",
+        key="education", label="Éducation", short="Éducation", level=STANDARD, color="#D9705B",
         topics=(
             "Faut-il noter les élèves ?",
             "L'école doit-elle apprendre à obéir ou à contester ?",
@@ -154,7 +157,7 @@ DOMAINS: tuple[Domain, ...] = (
         ),
     ),
     Domain(
-        key="monde", label="Géopolitique & Monde", level=EXIGEANT, color="#3F7CAC",
+        key="monde", label="Géopolitique & Monde", short="Monde", level=EXIGEANT, color="#3F7CAC",
         topics=(
             "Une frontière peut-elle être juste ?",
             "Le développement doit-il suivre le modèle occidental ?",
@@ -169,7 +172,7 @@ DOMAINS: tuple[Domain, ...] = (
         ),
     ),
     Domain(
-        key="quotidien", label="Vie quotidienne", level=ECHAUFFEMENT, color="#E8A33D",
+        key="quotidien", label="Vie quotidienne", short="Quotidien", level=ECHAUFFEMENT, color="#E8A33D",
         topics=(
             "Le meilleur repas que vous ayez jamais mangé.",
             "Faut-il arriver en avance ?",
@@ -184,7 +187,7 @@ DOMAINS: tuple[Domain, ...] = (
         ),
     ),
     Domain(
-        key="carte_blanche", label="Carte blanche", level=ECHAUFFEMENT, color="#D64550",
+        key="carte_blanche", label="Carte blanche", short="Carte blanche", level=ECHAUFFEMENT, color="#D64550",
         topics=(
             "Faites l'éloge du lundi.",
             "Plaidez pour la cause du moustique.",
@@ -241,15 +244,43 @@ def draw(
     return domain, draw_topic(domain, exclude=recent_topics, rng=rng)
 
 
+class UnknownTopic(LookupError):
+    pass
+
+
+def resolve(domain_key: str, topic_index: int) -> tuple[Domain, str]:
+    """Retrouve le sujet canonique à partir de son identifiant.
+
+    Le client ne renvoie jamais le texte du sujet, seulement sa référence. Deux
+    problèmes disparaissent d'un coup : le texte ne peut plus être altéré en
+    route (encodage, troncature), et le sujet enregistré avec la session ne peut
+    plus diverger de celui qui a été tiré.
+    """
+    domain = DOMAINS_BY_KEY.get(domain_key)
+    if domain is None:
+        raise UnknownTopic(f"Domaine inconnu : {domain_key}")
+    if not 0 <= topic_index < len(domain.topics):
+        raise UnknownTopic(f"Sujet inconnu dans {domain_key} : {topic_index}")
+    return domain, domain.topics[topic_index]
+
+
 def wheel_payload() -> list[dict]:
-    """Description des secteurs, consommée par la roue côté front."""
+    """Description des secteurs, consommée par la roue côté front.
+
+    Les sujets sont inclus pour l'animation du second tirage : le défilement
+    rapide qui rend visible le hasard à l'intérieur du domaine. Ils ne sont pas
+    confidentiels — les parcourir à l'avance ne fait que gâcher son propre
+    exercice.
+    """
     return [
         {
             "key": d.key,
             "label": d.label,
             "level": d.level,
             "color": d.color,
+            "short": d.short,
             "topic_count": len(d.topics),
+            "topics": list(d.topics),
         }
         for d in DOMAINS
     ]
