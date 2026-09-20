@@ -1,0 +1,912 @@
+{
+  "text": "Faut-il avoir peur de l'intelligence artificielle? Je vais vous répondre en trois temps: ce que nous craignons, ce que nous risquons vraiment, et ce que nous devons exiger. Ce que nous craignons, d'abord. En mil huit cent onze, des ouvriers anglais brisent les métiers à tisser de Nottingham. On les appelle les luddites. Ils ne détestaient pas le tissu. Ils refusaient de perdre leur salaire sans avoir eu voix au chapitre. La machine n'était que le visage visible d'une décision prise sans eux. Ce que nous risquons, ensuite. Aujourd'hui, un algorithme refuse un crédit, et personne dans l'agence ne sait expliquer pourquoi. Le client repart sans motif et sans recours. Le danger n'est pas qu'une machine pense. Il est qu'elle décide, et que plus personne ne réponde de cette décision. Ce que nous devons exiger, enfin. Trois choses simples: savoir quand une décision vient d'un algorithme, obtenir la raison de cette décision, et pouvoir la faire réexaminer par un humain. La peur nous fait reculer devant l'outil. L'exigence nous fait tenir la main qui le tient. Je préfère la seconde. Merci.",
+  "words": [
+    {
+      "word": "Faut-il",
+      "start": 0.35,
+      "end": 0.771
+    },
+    {
+      "word": "avoir",
+      "start": 0.811,
+      "end": 1.136
+    },
+    {
+      "word": "peur",
+      "start": 1.176,
+      "end": 1.453
+    },
+    {
+      "word": "de",
+      "start": 1.493,
+      "end": 1.674
+    },
+    {
+      "word": "l'intelligence",
+      "start": 1.714,
+      "end": 2.471
+    },
+    {
+      "word": "artificielle?",
+      "start": 2.511,
+      "end": 3.172
+    },
+    {
+      "word": "Je",
+      "start": 4.932,
+      "end": 5.113
+    },
+    {
+      "word": "vais",
+      "start": 5.153,
+      "end": 5.43
+    },
+    {
+      "word": "vous",
+      "start": 5.47,
+      "end": 5.747
+    },
+    {
+      "word": "répondre",
+      "start": 5.787,
+      "end": 6.256
+    },
+    {
+      "word": "en",
+      "start": 6.296,
+      "end": 6.477
+    },
+    {
+      "word": "trois",
+      "start": 6.517,
+      "end": 6.842
+    },
+    {
+      "word": "temps:",
+      "start": 6.882,
+      "end": 7.207
+    },
+    {
+      "word": "ce",
+      "start": 7.527,
+      "end": 7.708
+    },
+    {
+      "word": "que",
+      "start": 7.748,
+      "end": 7.977
+    },
+    {
+      "word": "nous",
+      "start": 8.017,
+      "end": 8.294
+    },
+    {
+      "word": "craignons,",
+      "start": 8.334,
+      "end": 8.851
+    },
+    {
+      "word": "ce",
+      "start": 9.131,
+      "end": 9.312
+    },
+    {
+      "word": "que",
+      "start": 9.352,
+      "end": 9.581
+    },
+    {
+      "word": "nous",
+      "start": 9.621,
+      "end": 9.898
+    },
+    {
+      "word": "risquons",
+      "start": 9.938,
+      "end": 10.407
+    },
+    {
+      "word": "vraiment,",
+      "start": 10.447,
+      "end": 10.916
+    },
+    {
+      "word": "et",
+      "start": 11.196,
+      "end": 11.377
+    },
+    {
+      "word": "ce",
+      "start": 11.417,
+      "end": 11.598
+    },
+    {
+      "word": "que",
+      "start": 11.638,
+      "end": 11.867
+    },
+    {
+      "word": "nous",
+      "start": 11.907,
+      "end": 12.184
+    },
+    {
+      "word": "devons",
+      "start": 12.224,
+      "end": 12.597
+    },
+    {
+      "word": "exiger.",
+      "start": 12.637,
+      "end": 13.01
+    },
+    {
+      "word": "Ce",
+      "start": 13.63,
+      "end": 13.811
+    },
+    {
+      "word": "que",
+      "start": 13.851,
+      "end": 14.08
+    },
+    {
+      "word": "nous",
+      "start": 14.12,
+      "end": 14.397
+    },
+    {
+      "word": "craignons,",
+      "start": 14.437,
+      "end": 14.954
+    },
+    {
+      "word": "d'abord.",
+      "start": 15.234,
+      "end": 15.655
+    },
+    {
+      "word": "En",
+      "start": 16.275,
+      "end": 16.456
+    },
+    {
+      "word": "mil",
+      "start": 16.496,
+      "end": 16.725
+    },
+    {
+      "word": "huit",
+      "start": 16.765,
+      "end": 17.042
+    },
+    {
+      "word": "cent",
+      "start": 17.082,
+      "end": 17.359
+    },
+    {
+      "word": "onze,",
+      "start": 17.399,
+      "end": 17.676
+    },
+    {
+      "word": "des",
+      "start": 17.956,
+      "end": 18.185
+    },
+    {
+      "word": "ouvriers",
+      "start": 18.225,
+      "end": 18.694
+    },
+    {
+      "word": "anglais",
+      "start": 18.734,
+      "end": 19.155
+    },
+    {
+      "word": "brisent",
+      "start": 19.195,
+      "end": 19.616
+    },
+    {
+      "word": "les",
+      "start": 19.656,
+      "end": 19.885
+    },
+    {
+      "word": "métiers",
+      "start": 19.925,
+      "end": 20.346
+    },
+    {
+      "word": "à",
+      "start": 20.386,
+      "end": 20.519
+    },
+    {
+      "word": "tisser",
+      "start": 20.559,
+      "end": 20.932
+    },
+    {
+      "word": "de",
+      "start": 20.972,
+      "end": 21.153
+    },
+    {
+      "word": "Nottingham.",
+      "start": 21.193,
+      "end": 21.758
+    },
+    {
+      "word": "On",
+      "start": 22.378,
+      "end": 22.559
+    },
+    {
+      "word": "les",
+      "start": 22.599,
+      "end": 22.828
+    },
+    {
+      "word": "appelle",
+      "start": 22.868,
+      "end": 23.289
+    },
+    {
+      "word": "les",
+      "start": 23.329,
+      "end": 23.558
+    },
+    {
+      "word": "luddites.",
+      "start": 23.598,
+      "end": 24.067
+    },
+    {
+      "word": "Ils",
+      "start": 25.387,
+      "end": 25.616
+    },
+    {
+      "word": "ne",
+      "start": 25.656,
+      "end": 25.837
+    },
+    {
+      "word": "détestaient",
+      "start": 25.877,
+      "end": 26.49
+    },
+    {
+      "word": "pas",
+      "start": 26.53,
+      "end": 26.759
+    },
+    {
+      "word": "le",
+      "start": 26.799,
+      "end": 26.98
+    },
+    {
+      "word": "tissu.",
+      "start": 27.02,
+      "end": 27.345
+    },
+    {
+      "word": "Ils",
+      "start": 27.965,
+      "end": 28.194
+    },
+    {
+      "word": "refusaient",
+      "start": 28.234,
+      "end": 28.799
+    },
+    {
+      "word": "de",
+      "start": 28.839,
+      "end": 29.02
+    },
+    {
+      "word": "perdre",
+      "start": 29.06,
+      "end": 29.433
+    },
+    {
+      "word": "leur",
+      "start": 29.473,
+      "end": 29.75
+    },
+    {
+      "word": "salaire",
+      "start": 29.79,
+      "end": 30.211
+    },
+    {
+      "word": "sans",
+      "start": 30.251,
+      "end": 30.528
+    },
+    {
+      "word": "avoir",
+      "start": 30.568,
+      "end": 30.893
+    },
+    {
+      "word": "eu",
+      "start": 30.933,
+      "end": 31.114
+    },
+    {
+      "word": "voix",
+      "start": 31.154,
+      "end": 31.431
+    },
+    {
+      "word": "au",
+      "start": 31.471,
+      "end": 31.652
+    },
+    {
+      "word": "chapitre.",
+      "start": 31.692,
+      "end": 32.161
+    },
+    {
+      "word": "La",
+      "start": 32.781,
+      "end": 32.962
+    },
+    {
+      "word": "machine",
+      "start": 33.002,
+      "end": 33.423
+    },
+    {
+      "word": "n'était",
+      "start": 33.463,
+      "end": 33.884
+    },
+    {
+      "word": "que",
+      "start": 33.924,
+      "end": 34.153
+    },
+    {
+      "word": "le",
+      "start": 34.193,
+      "end": 34.374
+    },
+    {
+      "word": "visage",
+      "start": 34.414,
+      "end": 34.787
+    },
+    {
+      "word": "visible",
+      "start": 34.827,
+      "end": 35.248
+    },
+    {
+      "word": "d'une",
+      "start": 35.288,
+      "end": 35.613
+    },
+    {
+      "word": "décision",
+      "start": 35.653,
+      "end": 36.122
+    },
+    {
+      "word": "prise",
+      "start": 36.162,
+      "end": 36.487
+    },
+    {
+      "word": "sans",
+      "start": 36.527,
+      "end": 36.804
+    },
+    {
+      "word": "eux.",
+      "start": 36.844,
+      "end": 37.073
+    },
+    {
+      "word": "Ce",
+      "start": 37.693,
+      "end": 37.874
+    },
+    {
+      "word": "que",
+      "start": 37.914,
+      "end": 38.143
+    },
+    {
+      "word": "nous",
+      "start": 38.183,
+      "end": 38.46
+    },
+    {
+      "word": "risquons,",
+      "start": 38.5,
+      "end": 38.969
+    },
+    {
+      "word": "ensuite.",
+      "start": 39.249,
+      "end": 39.67
+    },
+    {
+      "word": "Aujourd'hui,",
+      "start": 40.29,
+      "end": 40.903
+    },
+    {
+      "word": "un",
+      "start": 41.183,
+      "end": 41.364
+    },
+    {
+      "word": "algorithme",
+      "start": 41.404,
+      "end": 41.969
+    },
+    {
+      "word": "refuse",
+      "start": 42.009,
+      "end": 42.382
+    },
+    {
+      "word": "un",
+      "start": 42.422,
+      "end": 42.603
+    },
+    {
+      "word": "crédit,",
+      "start": 42.643,
+      "end": 43.016
+    },
+    {
+      "word": "et",
+      "start": 43.296,
+      "end": 43.477
+    },
+    {
+      "word": "personne",
+      "start": 43.517,
+      "end": 43.986
+    },
+    {
+      "word": "dans",
+      "start": 44.026,
+      "end": 44.303
+    },
+    {
+      "word": "l'agence",
+      "start": 44.343,
+      "end": 44.812
+    },
+    {
+      "word": "ne",
+      "start": 44.852,
+      "end": 45.033
+    },
+    {
+      "word": "sait",
+      "start": 45.073,
+      "end": 45.35
+    },
+    {
+      "word": "expliquer",
+      "start": 45.39,
+      "end": 45.907
+    },
+    {
+      "word": "pourquoi.",
+      "start": 45.947,
+      "end": 46.416
+    },
+    {
+      "word": "Le",
+      "start": 47.036,
+      "end": 47.217
+    },
+    {
+      "word": "client",
+      "start": 47.257,
+      "end": 47.63
+    },
+    {
+      "word": "repart",
+      "start": 47.67,
+      "end": 48.043
+    },
+    {
+      "word": "sans",
+      "start": 48.083,
+      "end": 48.36
+    },
+    {
+      "word": "motif",
+      "start": 48.4,
+      "end": 48.725
+    },
+    {
+      "word": "et",
+      "start": 48.765,
+      "end": 48.946
+    },
+    {
+      "word": "sans",
+      "start": 48.986,
+      "end": 49.263
+    },
+    {
+      "word": "recours.",
+      "start": 49.303,
+      "end": 49.724
+    },
+    {
+      "word": "Le",
+      "start": 51.244,
+      "end": 51.425
+    },
+    {
+      "word": "danger",
+      "start": 51.465,
+      "end": 51.838
+    },
+    {
+      "word": "n'est",
+      "start": 51.878,
+      "end": 52.203
+    },
+    {
+      "word": "pas",
+      "start": 52.243,
+      "end": 52.472
+    },
+    {
+      "word": "qu'une",
+      "start": 52.512,
+      "end": 52.885
+    },
+    {
+      "word": "machine",
+      "start": 52.925,
+      "end": 53.346
+    },
+    {
+      "word": "pense.",
+      "start": 53.386,
+      "end": 53.711
+    },
+    {
+      "word": "Il",
+      "start": 54.331,
+      "end": 54.512
+    },
+    {
+      "word": "est",
+      "start": 54.552,
+      "end": 54.781
+    },
+    {
+      "word": "qu'elle",
+      "start": 54.821,
+      "end": 55.242
+    },
+    {
+      "word": "décide,",
+      "start": 55.282,
+      "end": 55.655
+    },
+    {
+      "word": "et",
+      "start": 55.935,
+      "end": 56.116
+    },
+    {
+      "word": "que",
+      "start": 56.156,
+      "end": 56.385
+    },
+    {
+      "word": "plus",
+      "start": 56.425,
+      "end": 56.702
+    },
+    {
+      "word": "personne",
+      "start": 56.742,
+      "end": 57.211
+    },
+    {
+      "word": "ne",
+      "start": 57.251,
+      "end": 57.432
+    },
+    {
+      "word": "réponde",
+      "start": 57.472,
+      "end": 57.893
+    },
+    {
+      "word": "de",
+      "start": 57.933,
+      "end": 58.114
+    },
+    {
+      "word": "cette",
+      "start": 58.154,
+      "end": 58.479
+    },
+    {
+      "word": "décision.",
+      "start": 58.519,
+      "end": 58.988
+    },
+    {
+      "word": "Ce",
+      "start": 59.608,
+      "end": 59.789
+    },
+    {
+      "word": "que",
+      "start": 59.829,
+      "end": 60.058
+    },
+    {
+      "word": "nous",
+      "start": 60.098,
+      "end": 60.375
+    },
+    {
+      "word": "devons",
+      "start": 60.415,
+      "end": 60.788
+    },
+    {
+      "word": "exiger,",
+      "start": 60.828,
+      "end": 61.201
+    },
+    {
+      "word": "enfin.",
+      "start": 61.481,
+      "end": 61.806
+    },
+    {
+      "word": "Trois",
+      "start": 62.426,
+      "end": 62.751
+    },
+    {
+      "word": "choses",
+      "start": 62.791,
+      "end": 63.164
+    },
+    {
+      "word": "simples:",
+      "start": 63.204,
+      "end": 63.625
+    },
+    {
+      "word": "savoir",
+      "start": 63.945,
+      "end": 64.318
+    },
+    {
+      "word": "quand",
+      "start": 64.358,
+      "end": 64.683
+    },
+    {
+      "word": "une",
+      "start": 64.723,
+      "end": 64.952
+    },
+    {
+      "word": "décision",
+      "start": 64.992,
+      "end": 65.461
+    },
+    {
+      "word": "vient",
+      "start": 65.501,
+      "end": 65.826
+    },
+    {
+      "word": "d'un",
+      "start": 65.866,
+      "end": 66.143
+    },
+    {
+      "word": "algorithme,",
+      "start": 66.183,
+      "end": 66.748
+    },
+    {
+      "word": "obtenir",
+      "start": 67.028,
+      "end": 67.449
+    },
+    {
+      "word": "la",
+      "start": 67.489,
+      "end": 67.67
+    },
+    {
+      "word": "raison",
+      "start": 67.71,
+      "end": 68.083
+    },
+    {
+      "word": "de",
+      "start": 68.123,
+      "end": 68.304
+    },
+    {
+      "word": "cette",
+      "start": 68.344,
+      "end": 68.669
+    },
+    {
+      "word": "décision,",
+      "start": 68.709,
+      "end": 69.178
+    },
+    {
+      "word": "et",
+      "start": 69.458,
+      "end": 69.639
+    },
+    {
+      "word": "pouvoir",
+      "start": 69.679,
+      "end": 70.1
+    },
+    {
+      "word": "la",
+      "start": 70.14,
+      "end": 70.321
+    },
+    {
+      "word": "faire",
+      "start": 70.361,
+      "end": 70.686
+    },
+    {
+      "word": "réexaminer",
+      "start": 70.726,
+      "end": 71.291
+    },
+    {
+      "word": "par",
+      "start": 71.331,
+      "end": 71.56
+    },
+    {
+      "word": "un",
+      "start": 71.6,
+      "end": 71.781
+    },
+    {
+      "word": "humain.",
+      "start": 71.821,
+      "end": 72.194
+    },
+    {
+      "word": "La",
+      "start": 73.614,
+      "end": 73.795
+    },
+    {
+      "word": "peur",
+      "start": 73.835,
+      "end": 74.112
+    },
+    {
+      "word": "nous",
+      "start": 74.152,
+      "end": 74.429
+    },
+    {
+      "word": "fait",
+      "start": 74.469,
+      "end": 74.746
+    },
+    {
+      "word": "reculer",
+      "start": 74.786,
+      "end": 75.207
+    },
+    {
+      "word": "devant",
+      "start": 75.247,
+      "end": 75.62
+    },
+    {
+      "word": "l'outil.",
+      "start": 75.66,
+      "end": 76.081
+    },
+    {
+      "word": "L'exigence",
+      "start": 76.701,
+      "end": 77.266
+    },
+    {
+      "word": "nous",
+      "start": 77.306,
+      "end": 77.583
+    },
+    {
+      "word": "fait",
+      "start": 77.623,
+      "end": 77.9
+    },
+    {
+      "word": "tenir",
+      "start": 77.94,
+      "end": 78.265
+    },
+    {
+      "word": "la",
+      "start": 78.305,
+      "end": 78.486
+    },
+    {
+      "word": "main",
+      "start": 78.526,
+      "end": 78.803
+    },
+    {
+      "word": "qui",
+      "start": 78.843,
+      "end": 79.072
+    },
+    {
+      "word": "le",
+      "start": 79.112,
+      "end": 79.293
+    },
+    {
+      "word": "tient.",
+      "start": 79.333,
+      "end": 79.658
+    },
+    {
+      "word": "Je",
+      "start": 80.278,
+      "end": 80.459
+    },
+    {
+      "word": "préfère",
+      "start": 80.499,
+      "end": 80.92
+    },
+    {
+      "word": "la",
+      "start": 80.96,
+      "end": 81.141
+    },
+    {
+      "word": "seconde.",
+      "start": 81.181,
+      "end": 81.602
+    },
+    {
+      "word": "Merci.",
+      "start": 82.222,
+      "end": 82.547
+    }
+  ],
+  "language": "fr",
+  "duration": 83.57
+}
