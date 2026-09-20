@@ -53,6 +53,7 @@ def analyse_session(
         words=transcript.words,
         duration_s=duration,
         prosody=prosody,
+        time_limit_s=time_limit_s,
     )
 
     # Le LLM juge une transcription débarrassée des tics : ceux-ci sont déjà

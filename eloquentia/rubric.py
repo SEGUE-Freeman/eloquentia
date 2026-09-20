@@ -20,7 +20,12 @@ from .models import SpeechMetrics
 # En 1.0, il pénalisait les tics dans l'axe « langue » alors que le score
 # d'aisance les sanctionnait déjà, et proposait comme axe prioritaire ce que
 # les mesures disaient déjà. Le même défaut comptait deux fois.
-RUBRIC_VERSION = "1.1"
+#
+# 1.2 : ancrage explicite du niveau de référence. En 1.1, les paliers étaient
+# calibrés sur une finale de concours : un discours honnête de débutant tombait
+# vers 25-30, ce qui informe mal et décourage. Le point médian est désormais
+# défini — 50 = prestation correcte pour une improvisation de deux minutes.
+RUBRIC_VERSION = "1.2"
 
 # Poids du score global. L'aisance vient du code (metrics.fluency_score), les
 # cinq autres du LLM.
@@ -38,9 +43,9 @@ AXES: dict[str, dict[str, str]] = {
         "label": "Structure",
         "question": "Le discours a-t-il une architecture audible : ouverture, progression, chute ?",
         "anchors": (
-            "0-20 : suite d'idées sans ordre, on ne sait ni où ça commence ni où ça va. "
-            "21-40 : un début identifiable, puis une énumération qui s'arrête faute de temps. "
-            "41-60 : un fil conducteur existe mais les transitions sont absentes ou artificielles. "
+            "0-20 : aucune organisation perceptible, on ne sait ni où ça commence ni où ça va. "
+            "21-40 : des idées juxtaposées, sans début ni fin marqués. "
+            "41-60 : un début et une fin identifiables, un fil qu'on arrive à suivre, mais des transitions absentes. "
             "61-80 : ouverture nette, deux ou trois mouvements distincts, conclusion qui referme le propos. "
             "81-100 : architecture évidente à l'oreille, transitions qui font avancer, chute qui répond à l'ouverture."
         ),
@@ -61,8 +66,8 @@ AXES: dict[str, dict[str, str]] = {
         "question": "Y a-t-il de la matière : exemples concrets, références justes, idées non banales ?",
         "anchors": (
             "0-20 : généralités interchangeables, aucun exemple. "
-            "21-40 : une idée répétée sous trois formes, exemples vagues. "
-            "41-60 : idées correctes et exemples présents mais attendus. "
+            "21-40 : une seule idée répétée sous trois formes, exemples vagues. "
+            "41-60 : des exemples réels, même personnels ou attendus, et des idées correctes. "
             "61-80 : exemples précis et vérifiables, au moins une référence pertinente, une idée qui surprend. "
             "81-100 : matière dense et exacte, références convoquées à bon escient, point de vue original et soutenu."
         ),
@@ -71,9 +76,9 @@ AXES: dict[str, dict[str, str]] = {
         "label": "Langue",
         "question": "Syntaxe, précision du vocabulaire, registre, images.",
         "anchors": (
-            "0-20 : phrases inachevées, vocabulaire approximatif, sens souvent flou. "
-            "21-40 : syntaxe relâchée, mots passe-partout (chose, truc, faire). "
-            "41-60 : langue correcte mais plate, peu de variation de construction. "
+            "0-20 : le sens se perd, phrases abandonnées en cours de route, vocabulaire hors sujet. "
+            "21-40 : syntaxe très relâchée, mots passe-partout (chose, truc, faire) à chaque phrase. "
+            "41-60 : langue correcte mais plate, quelques relâchements propres à l'oral, peu de variation de construction. "
             "61-80 : vocabulaire précis, phrases construites, quelques images qui fonctionnent. "
             "81-100 : langue tenue et vivante, rythme des phrases travaillé, formules qui se retiennent."
         ),
@@ -83,8 +88,8 @@ AXES: dict[str, dict[str, str]] = {
         "question": "Le discours convainc-t-il, s'adresse-t-il à quelqu'un, laisse-t-il une trace ?",
         "anchors": (
             "0-20 : récitation sans destinataire, rien ne reste. "
-            "21-40 : intention perceptible mais aucune adresse à l'auditoire. "
-            "41-60 : on suit sans être engagé. "
+            "21-40 : une intention perceptible, mais aucune adresse à l'auditoire. "
+            "41-60 : on suit le propos sans être emporté, et une idée au moins reste à la fin. "
             "61-80 : adresse claire, montée en intensité, une formule qui reste. "
             "81-100 : on est tenu du début à la fin, la chute est mémorable."
         ),
@@ -92,6 +97,14 @@ AXES: dict[str, dict[str, str]] = {
 }
 
 SYSTEM_PROMPT = f"""Tu es jury d'un concours d'éloquence francophone, spécialisé dans l'exercice du discours improvisé sur sujet imposé. Tu es exigeant et concret : ton retour doit être utilisable dès la prestation suivante.
+
+NIVEAU DE RÉFÉRENCE — lis ceci avant de noter quoi que ce soit.
+Tu évalues une improvisation de deux minutes, sans préparation, produite par une personne qui s'entraîne régulièrement. Ce n'est pas une finale de concours, et l'échelle doit refléter ce format :
+- 50 = une prestation honnête pour l'exercice : le sujet est traité, le propos se suit, la langue est correcte. C'est le point médian normal, pas un aveu de faiblesse.
+- 70 = nettement au-dessus de la moyenne des orateurs qui s'entraînent.
+- 85 et plus = exceptionnel, ce qu'on retient d'une soirée entière.
+- Moins de 30 = quelque chose a vraiment manqué, et tu dois pouvoir dire quoi en une phrase.
+Noter sévèrement n'est pas noter juste. Une note basse doit signaler un vrai manque, pas l'écart entre un amateur et un finaliste.
 
 GRILLE DE NOTATION (version {RUBRIC_VERSION}) — applique-la à la lettre, palier par palier :
 {chr(10).join(f"- {name} ({a['label']}) : {a['question']} {a['anchors']}" for name, a in AXES.items())}

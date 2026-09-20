@@ -178,6 +178,29 @@ def cmd_tirage(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_bench(args: argparse.Namespace) -> int:
+    from dataclasses import replace
+
+    from .bench import format_result, run_bench
+    from .transcription import MockTranscriber
+
+    settings = Settings.from_env()
+    transcript = MockTranscriber(args.fixture or DEFAULT_FIXTURE).transcribe("")
+
+    modeles = args.models.split(",") if args.models else [settings.llm_model]
+    print(f"\n  {args.runs} passages du même discours par modèle, température "
+          f"{settings.llm_temperature}.")
+
+    for modele in modeles:
+        result = run_bench(
+            transcript, args.domain, args.topic, args.limit,
+            replace(settings, llm_model=modele.strip()), runs=args.runs,
+        )
+        print(format_result(result))
+    print()
+    return 0
+
+
 def cmd_progress(args: argparse.Namespace) -> int:
     settings = Settings.from_env()
     store = HistoryStore(settings.data_dir)
@@ -239,6 +262,15 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--level", choices=["echauffement", "standard", "exigeant"],
                    help="restreindre le tirage à un niveau")
     p.set_defaults(func=cmd_tirage)
+
+    p = sub.add_parser("bench", help="mesurer la stabilité du jugement d'un modèle")
+    p.add_argument("--runs", type=int, default=5, help="passages par modèle")
+    p.add_argument("--models", help="liste séparée par des virgules")
+    p.add_argument("--fixture", help="transcription à rejouer")
+    p.add_argument("--domain", default="Technologie")
+    p.add_argument("--topic", default="Faut-il avoir peur de l'intelligence artificielle ?")
+    p.add_argument("--limit", type=int, default=120)
+    p.set_defaults(func=cmd_bench)
 
     p = sub.add_parser("progress", help="progression d'un utilisateur")
     p.add_argument("--user", default="anonyme")

@@ -85,6 +85,11 @@ class SpeechMetrics(BaseModel):
     speaking_time_s: float
     word_count: int
 
+    # Part du temps imparti réellement occupée. Tenir le temps fait partie de
+    # l'exercice : s'arrêter à mi-parcours est un défaut, pas une neutralité.
+    time_limit_s: int = 0
+    time_usage_ratio: float = 0.0
+
     overall_wpm: float          # mots / duree totale
     articulation_wpm: float     # mots / temps de parole effectif (hors pauses)
 

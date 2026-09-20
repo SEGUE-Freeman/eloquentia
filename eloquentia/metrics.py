@@ -294,14 +294,26 @@ SILENCE_ANCHORS = [(0.10, 85.0), (0.18, 100.0), (0.30, 85.0), (0.40, 55.0), (0.5
 MATTR_ANCHORS = [(0.45, 10.0), (0.55, 35.0), (0.65, 65.0), (0.75, 90.0), (0.82, 100.0)]
 PITCH_ANCHORS = [(0.5, 5.0), (1.5, 35.0), (2.5, 70.0), (3.5, 95.0), (5.0, 100.0), (8.0, 80.0)]
 
+# Occupation du temps imparti. S'arrêter à mi-parcours n'était pas pénalisé
+# jusqu'ici : les silences étant mesurés à l'intérieur de ce qui est dit, un
+# discours de 30 s sur 120 pouvait décrocher 100. Tenir la durée demandée fait
+# pourtant partie de l'exercice — c'est même l'essentiel de sa difficulté.
+# Léger malus au-delà de la limite : dépasser, c'est ne pas avoir vu venir sa
+# propre conclusion.
+TIME_USAGE_ANCHORS = [
+    (0.25, 10.0), (0.40, 30.0), (0.55, 55.0), (0.70, 80.0),
+    (0.85, 100.0), (1.00, 100.0), (1.15, 75.0), (1.40, 45.0),
+]
+
 # Poids du score d'aisance. Les tics pèsent le plus : c'est le défaut le plus
 # audible et le plus corrigeable d'un orateur débutant.
 FLUENCY_WEIGHTS = {
-    "debit": 25.0,
-    "tics": 30.0,
-    "pauses": 12.0,
-    "silence": 8.0,
-    "lexique": 15.0,
+    "debit": 22.0,
+    "tics": 26.0,
+    "pauses": 10.0,
+    "silence": 7.0,
+    "lexique": 13.0,
+    "temps": 12.0,
     "intonation": 10.0,
 }
 
@@ -313,6 +325,7 @@ def compute_fluency(
     silence_ratio: float,
     mattr_value: float,
     prosody: ProsodyStats | None,
+    time_usage_ratio: float = 0.0,
 ) -> tuple[int, list[str]]:
     """Score d'aisance 0-100, entièrement déterministe.
 
@@ -328,6 +341,10 @@ def compute_fluency(
         ("silence", _piecewise(silence_ratio, SILENCE_ANCHORS)),
         ("lexique", _piecewise(mattr_value, MATTR_ANCHORS)),
     ]
+    # Sans temps imparti connu (analyse d'un fichier isolé), la composante est
+    # omise et les autres poids se renormalisent.
+    if time_usage_ratio > 0:
+        parts.append(("temps", _piecewise(time_usage_ratio, TIME_USAGE_ANCHORS)))
     if prosody is not None:
         parts.append(("intonation", _piecewise(prosody.pitch_variation_st, PITCH_ANCHORS)))
 
@@ -348,6 +365,16 @@ def compute_fluency(
         notes.append(f"{filler_per_min:.1f} tics par minute : perceptible mais gérable.")
     else:
         notes.append(f"{filler_per_min:.1f} tic par minute : parole propre.")
+
+    if 0 < time_usage_ratio < 0.6:
+        notes.append(
+            f"{time_usage_ratio:.0%} du temps imparti utilisé : le discours s'arrête "
+            "avant d'avoir été développé."
+        )
+    elif 0.6 <= time_usage_ratio < 0.8:
+        notes.append(f"{time_usage_ratio:.0%} du temps imparti : il restait de la place.")
+    elif time_usage_ratio > 1.05:
+        notes.append("Temps imparti dépassé : la conclusion n'a pas été anticipée.")
 
     if long_pause_per_min >= 2:
         notes.append("Trop de silences longs : le fil se perd en cours de route.")
@@ -372,8 +399,10 @@ def analyse_speech(
     words: list[Word],
     duration_s: float,
     prosody: ProsodyStats | None = None,
+    time_limit_s: int = 0,
 ) -> SpeechMetrics:
     duration_s = max(0.1, duration_s)
+    time_usage_ratio = round(duration_s / time_limit_s, 3) if time_limit_s > 0 else 0.0
 
     pauses, speaking_time = compute_pauses(words, duration_s)
     tokens = tokenize(text)
@@ -400,13 +429,15 @@ def analyse_speech(
 
     fluency_score, fluency_notes = compute_fluency(
         articulation_wpm, filler_per_min, long_pause_per_min,
-        pauses.silence_ratio, mattr_value, prosody,
+        pauses.silence_ratio, mattr_value, prosody, time_usage_ratio,
     )
 
     return SpeechMetrics(
         duration_s=round(duration_s, 2),
         speaking_time_s=round(speaking_time, 2),
         word_count=word_count,
+        time_limit_s=time_limit_s,
+        time_usage_ratio=time_usage_ratio,
         overall_wpm=round(overall_wpm, 1),
         articulation_wpm=round(articulation_wpm, 1),
         pauses=pauses,

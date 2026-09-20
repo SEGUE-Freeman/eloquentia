@@ -239,6 +239,42 @@ def test_score_borne_entre_0_et_100():
     assert meilleur > pire
 
 
+def test_temps_imparti_sous_utilise_penalise():
+    """Tenir la durée demandée fait partie de l'exercice. Avant, un discours
+    de 30 s sur 120 pouvait décrocher 100 : les silences n'étaient mesurés
+    qu'à l'intérieur de ce qui était dit."""
+    plein, _ = compute_fluency(**BASE, time_usage_ratio=0.92)
+    moitie, _ = compute_fluency(**BASE, time_usage_ratio=0.50)
+    quart, _ = compute_fluency(**BASE, time_usage_ratio=0.25)
+    assert quart < moitie < plein
+
+
+def test_depassement_du_temps_penalise_legerement():
+    plein, _ = compute_fluency(**BASE, time_usage_ratio=0.95)
+    depasse, _ = compute_fluency(**BASE, time_usage_ratio=1.25)
+    assert depasse < plein
+
+
+def test_temps_inconnu_neutre():
+    """Analyse d'un fichier isolé, sans temps imparti : la composante est
+    omise et les autres poids se renormalisent, sans zéro implicite."""
+    sans, _ = compute_fluency(**BASE, time_usage_ratio=0.0)
+    bon, _ = compute_fluency(**BASE, time_usage_ratio=0.90)
+    assert abs(sans - bon) <= 3
+
+
+def test_note_sur_le_temps_sous_utilise():
+    _, notes = compute_fluency(**BASE, time_usage_ratio=0.45)
+    assert any("temps imparti" in n for n in notes)
+
+
+def test_ratio_calcule_par_analyse_speech():
+    words = build_words([("un", 0.0, 0.3), ("deux", 0.4, 0.7)])
+    m = analyse_speech("Un deux.", words, duration_s=60.0, time_limit_s=120)
+    assert m.time_usage_ratio == pytest.approx(0.5)
+    assert m.time_limit_s == 120
+
+
 def test_prosodie_absente_ne_fausse_pas_le_score():
     """Sans prosodie, les poids restants doivent être renormalisés, pas
     complétés par un zéro implicite."""
