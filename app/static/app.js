@@ -380,6 +380,11 @@ function afficherResultat(rapport) {
     }, 120)
   );
 
+  // Les deux phrases qui comptent, placées à côté du score : on doit pouvoir
+  // repartir avec l'essentiel sans rien dérouler.
+  $("#res-fort").textContent = rapport.analysis.point_fort;
+  $("#res-corriger").textContent = rapport.analysis.axe_prioritaire;
+
   // Axes : l'aisance vient du code, les cinq autres du modèle. La distinction
   // est visible (couleur et mention), parce qu'elle change ce que vaut la note.
   const axes = $("#res-axes");
@@ -412,9 +417,7 @@ function afficherResultat(rapport) {
 
   const a = rapport.analysis;
   $("#res-retour").innerHTML = [
-    ["fort", "Point fort", a.point_fort],
-    ["corriger", "À corriger en priorité", a.axe_prioritaire],
-    ["exercice", "Pour la prochaine fois", a.exercice],
+    ["exercice", "L'exercice", a.exercice],
     a.reformulation ? ["mieux", "Mieux dit", a.reformulation] : null,
   ]
     .filter(Boolean)
@@ -423,6 +426,8 @@ function afficherResultat(rapport) {
         `<div class="retour-carte ${classe}"><h4>${titre}</h4><p>${echapper(texte)}</p></div>`
     )
     .join("");
+
+  afficherRessources(rapport.resources);
 
   $("#res-transcription").textContent = rapport.transcript.text;
   $("#res-transcription").hidden = true;
@@ -436,20 +441,61 @@ function afficherResultat(rapport) {
   }
 }
 
+/* Une ligne par axe, le détail replié. Les six justifications affichées d'un
+   bloc faisaient une page de texte que personne ne lit jusqu'au bout. */
 function ajouterAxe(parent, nom, valeur, estCode, justification) {
-  const ligne = document.createElement("div");
-  ligne.className = "axe-ligne";
+  const ligne = document.createElement("button");
+  ligne.type = "button";
+  ligne.className = "axe-ligne" + (justification ? "" : " fige");
   ligne.innerHTML =
-    `<div class="axe-nom">${nom}${estCode ? '<span class="mesure">mesuré</span>' : ""}</div>` +
-    `<div class="axe-piste"><div class="axe-barre${estCode ? " code" : ""}"></div></div>` +
-    `<div class="axe-valeur">${valeur}</div>` +
-    (justification ? `<p class="axe-just">${echapper(justification)}</p>` : "");
+    `<span class="axe-nom">${nom}${estCode ? '<span class="mesure">mesuré</span>' : ""}</span>` +
+    `<span class="axe-piste"><span class="axe-barre${estCode ? " code" : ""}"></span></span>` +
+    `<span class="axe-valeur">${valeur}</span>` +
+    `<span class="axe-fleche">${justification ? "▸" : ""}</span>`;
   parent.appendChild(ligne);
+
+  if (justification) {
+    const detail = document.createElement("p");
+    detail.className = "axe-just";
+    detail.textContent = justification;
+    detail.hidden = true;
+    parent.appendChild(detail);
+
+    ligne.setAttribute("aria-expanded", "false");
+    ligne.addEventListener("click", () => {
+      detail.hidden = !detail.hidden;
+      ligne.setAttribute("aria-expanded", String(!detail.hidden));
+    });
+  }
+
   requestAnimationFrame(() =>
     setTimeout(() => {
       ligne.querySelector(".axe-barre").style.width = `${valeur}%`;
     }, 200)
   );
+}
+
+function afficherRessources(ressources) {
+  const bloc = $("#bloc-ressources");
+  if (!ressources || !ressources.length) {
+    bloc.hidden = true;
+    return;
+  }
+  bloc.hidden = false;
+  $("#res-ressources").innerHTML = ressources
+    .map((r) => {
+      // Lien de recherche plutôt qu'une URL directe : elle ne peut pas mourir,
+      // et rien n'est inventé.
+      const lien = `https://www.google.com/search?q=${encodeURIComponent(r.search)}`;
+      return (
+        `<a class="ressource" href="${lien}" target="_blank" rel="noopener noreferrer">` +
+        `<span class="ressource-type">${echapper(r.kind)}</span>` +
+        `<p class="ressource-titre">${echapper(r.title)}</p>` +
+        `<p class="ressource-auteur">${echapper(r.author)}</p>` +
+        `<p class="ressource-note">${echapper(r.note)}</p></a>`
+      );
+    })
+    .join("");
 }
 
 function echapper(s) {

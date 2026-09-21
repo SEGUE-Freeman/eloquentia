@@ -20,7 +20,15 @@ from eloquentia.analysis import AnalysisError
 from eloquentia.config import Settings
 from eloquentia.pipeline import analyse_session
 from eloquentia.storage import HistoryStore, compute_progress, export_curve
-from eloquentia.topics import DOMAINS_BY_KEY, UnknownTopic, draw, resolve, wheel_payload
+from eloquentia.topics import (
+    DOMAINS_BY_KEY,
+    UnknownTopic,
+    draw,
+    resolve,
+    resource_payload,
+    suggest_resources,
+    wheel_payload,
+)
 from eloquentia.transcription import TranscriptionError
 
 STATIC_DIR = Path(__file__).parent / "static"
@@ -130,7 +138,16 @@ async def creer_session(
 
     report.audio_path = destination.name
     store.save(report)
-    return JSONResponse(report.model_dump(mode="json"))
+
+    # Les ressources ne sont pas stockées dans le rapport : elles sont dérivées
+    # du sujet, et la liste évoluera. Les figer dans l'historique reviendrait à
+    # conserver des suggestions périmées.
+    return JSONResponse({
+        **report.model_dump(mode="json"),
+        "resources": [
+            resource_payload(r) for r in suggest_resources(domaine, sujet, limit=3)
+        ],
+    })
 
 
 @app.get("/api/audio/{nom}")

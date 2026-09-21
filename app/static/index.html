@@ -90,40 +90,66 @@
 </main>
 
 <!-- ───────────────────────── Écran 4 : le résultat ───────────────────────── -->
-<main id="ecran-resultat" class="ecran">
+<main id="ecran-resultat" class="ecran large">
   <p id="res-sujet" class="etiquette"></p>
 
-  <div class="score-global">
-    <svg viewBox="0 0 200 200" class="anneau">
-      <circle cx="100" cy="100" r="86" class="anneau-fond"/>
-      <circle cx="100" cy="100" r="86" id="anneau-arc" class="anneau-arc"/>
-    </svg>
-    <div class="score-centre">
-      <span id="res-global">—</span>
-      <small>sur 100</small>
+  <!-- Bandeau de verdict : le score et les deux phrases qui comptent, visibles
+       sans défiler. Le détail vient après, pour qui veut creuser. -->
+  <section class="verdict">
+    <div class="score-global">
+      <svg viewBox="0 0 200 200" class="anneau">
+        <circle cx="100" cy="100" r="86" class="anneau-fond"/>
+        <circle cx="100" cy="100" r="86" id="anneau-arc" class="anneau-arc"/>
+      </svg>
+      <div class="score-centre">
+        <span id="res-global">—</span>
+        <small>sur 100</small>
+      </div>
     </div>
+    <div class="verdict-texte">
+      <div class="retour-carte fort">
+        <h4>Point fort</h4>
+        <p id="res-fort"></p>
+      </div>
+      <div class="retour-carte corriger">
+        <h4>À corriger en priorité</h4>
+        <p id="res-corriger"></p>
+      </div>
+    </div>
+  </section>
+
+  <div class="grille-resultat">
+    <section class="bloc">
+      <h3>Les six axes</h3>
+      <p class="sous-titre">Clique sur un axe pour lire le détail.</p>
+      <div id="res-axes" class="axes"></div>
+    </section>
+
+    <section class="bloc">
+      <h3>Ce qui a été mesuré</h3>
+      <div id="res-mesures" class="mesures"></div>
+      <ul id="res-notes" class="notes"></ul>
+    </section>
+
+    <section class="bloc">
+      <h3>Pour la prochaine fois</h3>
+      <div id="res-retour" class="retour"></div>
+    </section>
+
+    <section class="bloc" id="bloc-ressources" hidden>
+      <h3>Pour nourrir ce sujet</h3>
+      <p class="sous-titre">Quelques pistes choisies dans le domaine tiré.</p>
+      <div id="res-ressources" class="ressources"></div>
+    </section>
   </div>
 
   <section class="bloc">
-    <h3>Les six axes</h3>
-    <div id="res-axes" class="axes"></div>
-  </section>
-
-  <section class="bloc">
-    <h3>Ce qui a été mesuré</h3>
-    <div id="res-mesures" class="mesures"></div>
-    <ul id="res-notes" class="notes"></ul>
-    <audio id="res-audio" controls preload="none" hidden></audio>
-  </section>
-
-  <section class="bloc">
-    <h3>Le retour</h3>
-    <div id="res-retour" class="retour"></div>
-  </section>
-
-  <section class="bloc repliable">
-    <button class="replier" data-cible="res-transcription">Voir la transcription</button>
+    <div class="rangee-replier">
+      <button class="replier" data-cible="res-transcription">Voir la transcription</button>
+      <button class="replier" data-cible="res-audio">Réécouter</button>
+    </div>
     <p id="res-transcription" class="transcription" hidden></p>
+    <audio id="res-audio" controls preload="none" hidden></audio>
   </section>
 
   <div class="actions">

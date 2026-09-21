@@ -170,3 +170,20 @@ def test_historique_apres_session(client):
 
 def test_sante(client):
     assert client.get("/api/health").json()["domaines"] == len(DOMAINS)
+
+
+def test_session_renvoie_des_ressources(client):
+    r = envoyer(client).json()
+    assert len(r["resources"]) == 3
+    for x in r["resources"]:
+        assert x["title"] and x["author"] and x["search"]
+        # Aucune URL n'est fabriquee cote serveur : le client construit un
+        # lien de recherche a partir du titre et de l'auteur.
+        assert "http" not in x["search"]
+
+
+def test_ressources_liees_au_domaine_tire(client):
+    from eloquentia.topics import DOMAINS_BY_KEY
+    titres_du_domaine = {r.title for r in DOMAINS_BY_KEY["education"].resources}
+    r = envoyer(client).json()
+    assert all(x["title"] in titres_du_domaine for x in r["resources"])

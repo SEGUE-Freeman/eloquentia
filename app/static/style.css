@@ -374,25 +374,75 @@ select {
 #res-global { font-family: var(--serif); font-size: 3.2rem; line-height: 1; }
 .score-centre small { color: var(--doux); font-size: 0.75rem; letter-spacing: 0.1em; }
 
+/* Le résultat est plus large que les autres écrans : il porte deux colonnes
+   sur grand écran, ce qui évite la colonne unique interminable. */
+.ecran.large { max-width: 1040px; }
+
+.verdict {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 28px;
+  align-items: center;
+  background: var(--carte);
+  border: 1px solid var(--bord);
+  border-radius: var(--rayon);
+  padding: 24px;
+  margin: 12px 0 16px;
+  text-align: left;
+}
+.verdict-texte { display: flex; flex-direction: column; gap: 16px; }
+
+.grille-resultat {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+
 .bloc {
   background: var(--carte);
   border: 1px solid var(--bord);
   border-radius: var(--rayon);
   padding: 20px;
-  margin: 16px 0;
+  margin: 0 0 16px;
   text-align: left;
 }
 .bloc h3 {
   font-family: var(--serif);
   font-size: 1.05rem;
-  margin: 0 0 16px;
+  margin: 0 0 4px;
   color: var(--texte);
 }
+.sous-titre { font-size: 0.78rem; color: #5B6291; margin: 0 0 16px; }
+.bloc h3 + .axes,
+.bloc h3 + .mesures { margin-top: 16px; }
 
-.axes { display: flex; flex-direction: column; gap: 13px; }
-.axe-ligne { display: grid; grid-template-columns: 8.5rem 1fr 2.2rem; gap: 10px; align-items: center; }
+/* Les axes : une ligne compacte par axe, le détail replié. Affichées toutes
+   ensemble, les justifications formaient un mur de texte qu'on ne lit pas. */
+.axes { display: flex; flex-direction: column; }
+
+.axe-ligne {
+  display: grid;
+  grid-template-columns: 7.5rem 1fr 2.2rem 1rem;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+  background: none;
+  border: 0;
+  border-radius: 10px;
+  padding: 9px 6px;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.axe-ligne:hover { background: #ffffff08; }
+.axe-ligne[aria-expanded="true"] .axe-fleche { transform: rotate(90deg); }
+.axe-ligne.fige { cursor: default; }
+.axe-ligne.fige:hover { background: none; }
+
 .axe-nom { font-size: 0.85rem; color: var(--doux); }
-.axe-nom .mesure { display: block; font-size: 0.65rem; letter-spacing: 0.1em; color: #5B6291; }
+.axe-nom .mesure { display: block; font-size: 0.62rem; letter-spacing: 0.1em; color: #5B6291; }
 .axe-piste { height: 8px; background: var(--fond-2); border-radius: 99px; overflow: hidden; }
 .axe-barre {
   height: 100%;
@@ -402,9 +452,44 @@ select {
   transition: width 1s cubic-bezier(.2,.7,.3,1);
 }
 .axe-barre.code { background: linear-gradient(90deg, var(--cyan), var(--vert)); }
-.axe-valeur { font-variant-numeric: tabular-nums; font-weight: 600; text-align: right; font-size: 0.9rem; }
+.axe-valeur { font-variant-numeric: tabular-nums; font-weight: 600; text-align: right; font-size: 0.95rem; }
+.axe-fleche { color: #5B6291; font-size: 0.7rem; transition: transform 0.2s ease; }
 
-.axe-just { grid-column: 1 / -1; font-size: 0.85rem; color: var(--doux); line-height: 1.5; margin: 2px 0 6px; }
+.axe-just {
+  font-size: 0.85rem;
+  color: var(--doux);
+  line-height: 1.6;
+  margin: 0 0 10px;
+  padding: 0 6px 0 calc(7.5rem + 10px);
+  border-left: 2px solid var(--bord);
+}
+
+/* Ressources */
+.ressources { display: flex; flex-direction: column; gap: 12px; }
+.ressource {
+  display: block;
+  background: var(--fond-2);
+  border: 1px solid transparent;
+  border-radius: 12px;
+  padding: 13px 15px;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+.ressource:hover { border-color: var(--accent-2); transform: translateX(3px); }
+.ressource-type {
+  display: inline-block;
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--accent-2);
+  margin-bottom: 5px;
+}
+.ressource-titre { font-family: var(--serif); font-size: 1rem; margin: 0 0 2px; }
+.ressource-auteur { font-size: 0.78rem; color: var(--doux); margin: 0 0 6px; }
+.ressource-note { font-size: 0.82rem; color: #7C83AC; line-height: 1.5; margin: 0; }
+
+.rangee-replier { display: flex; gap: 18px; flex-wrap: wrap; }
 
 .mesures { display: grid; grid-template-columns: repeat(auto-fit, minmax(122px, 1fr)); gap: 12px; }
 .mesure-tuile { background: var(--fond-2); border-radius: 12px; padding: 12px; }
@@ -471,7 +556,15 @@ audio { width: 100%; margin-top: 16px; }
   * { scroll-behavior: auto; }
 }
 
+@media (max-width: 700px) {
+  /* Le bandeau de verdict repasse en colonne : le score au-dessus, les deux
+     phrases en dessous. */
+  .verdict { grid-template-columns: 1fr; gap: 18px; justify-items: center; }
+  .verdict-texte { width: 100%; }
+}
+
 @media (max-width: 480px) {
-  .axe-ligne { grid-template-columns: 6.5rem 1fr 2rem; }
+  .axe-ligne { grid-template-columns: 5.6rem 1fr 2rem 0.8rem; gap: 8px; }
+  .axe-just { padding-left: calc(5.6rem + 8px); }
   .bloc { padding: 16px; }
 }
